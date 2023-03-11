@@ -2,11 +2,7 @@
 #proprieta: value \\proprietà
 continuo proprieta
 #seconda_proprieta: value
-
-
-
 Property list
-
 #starting_date
 #ending_date
 #description
@@ -15,19 +11,13 @@ Property list
 #repeat
 #location
 
-
-
-
-
-> NOME
+> Secondo
 # TTAG
-
-> EVENTO DUE
+> Terzo
 # Start_date:
 # End_date:
 # depends_on:
 # repeat: every
 # TAG
 MULTLILINEA
-
 #

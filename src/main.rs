@@ -2,15 +2,45 @@ use std::fs;
 use std::io::{self, BufRead};
 use std::env;
 use std::path::Path;
+use itertools::{Itertools, Position};
 
+enum EventData {
+    Custom(&'static str),
+}
+
+#[derive(Debug)]
 struct Event {
-    name: String,
-    starting_date: String,
-    ending_date: String,
-    depends_on: String,
-    repeat: String,
-    tag: String,
-    location: String,
+    name: Option<String>,
+    starting_date: Option<String>,
+    ending_date: Option<String>,
+    depends_on: Option<String>,
+    repeat: Option<String>,
+    tag: Option<String>,
+    location: Option<String>,
+}
+
+impl Default for Event {
+    fn default() -> Self {
+        Self {
+            name : None,
+            starting_date: None,
+            ending_date: None,
+            depends_on: None,
+            repeat: None,
+            tag: None,
+            location: None,
+        }
+    }
+}
+
+
+impl Event {
+    fn new(data : & Vec<String>) -> Self{
+
+        println!("Building new event");
+        dbg!(data);
+        Event::default()
+    }
 }
 
 
@@ -19,20 +49,44 @@ fn main() {
     let args: Vec<String> = env::args().collect();
     let contents = match read_lines(&args[1]) {
         Ok(res) => res,
-        Err(_) => panic!("ERROR")
+        Err(_) => panic!("Could not read configuration file")
     };
-    for line in contents {
-        let temp = line.unwrap();
-        match temp.chars().nth(0) {
-            None => println!("None"),
-            Some('>') => println!("Found event"),
-            Some('#') => println!("Found property"),
-            _ => ()
+    let mut events = Vec::<Event>::new();
+    let mut event_string = Vec::<String>::new();
+    dbg!(events.last());
+    for line in contents.with_position() {
+        match line {
+            Position::Only(_) => {
+                panic!("File event has only one line!");
+            },
+            Position::First(temp) | Position::Middle(temp) =>{
+                let temp = temp.unwrap();
+                match temp.chars().nth(0) {
+                    None => (),
+                    Some('>') => {
+                        println!("FOUND >");
+                        if ! event_string.is_empty() {
+                            events.push(
+                                Event::new(&event_string)
+                            );
+                            event_string.clear();
+                        }
+                        event_string.push(temp);
+                    },
+                    _ => {
+                        event_string.push(temp);
+                    }
+                }
+            },
+            Position::Last(_) =>{
+                events.push(Event::new(&event_string));
+
+            }
+
+
+
         }
 
-        //if temp.chars().nth(0) == Some('#') {
-        //    println!("{}", temp);
-        //}
     }
 
 
