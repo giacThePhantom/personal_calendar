@@ -1,0 +1,33 @@
+> Nome evento
+#proprieta: value \\proprietà
+continuo proprieta
+#seconda_proprieta: value
+
+
+
+Property list
+
+#starting_date
+#ending_date
+#description
+#depends_on
+#tag
+#repeat
+#location
+
+
+
+
+
+> NOME
+# TTAG
+
+> EVENTO DUE
+# Start_date:
+# End_date:
+# depends_on:
+# repeat: every
+# TAG
+MULTLILINEA
+
+#
