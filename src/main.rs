@@ -39,7 +39,40 @@ impl Event {
 
         println!("Building new event");
         dbg!(data);
-        Event::default()
+        let mut res = Event::default();
+        let mut name = String::new();
+        let mut property = String::new();
+        for i in data{
+            match i.chars().nth(0) {
+                None => (),
+                Some('>') => {
+                    name.push_str(&i[1..].trim());
+                    // res.name = Some(i.clone());
+                },
+                Some('#') => {
+                    if property.len() > 0{
+                        dbg!(&property);
+                    }
+                        property.clear();
+                    property.push_str(&i[1..].trim());
+                }
+                _ => {
+                    if property.len() > 0 {
+                        property.push_str("\n");
+                        property.push_str(&i.trim());
+                    }
+                    else if name.len() > 0 {
+                        name.push_str("\n");
+                        name.push_str(&i.trim());
+                    }
+
+                    println!("FOUND CONTINUATION OF PROPERTY");
+                }
+            }
+        }
+        res.name = Some(name);
+        return res;
+
     }
 }
 
@@ -53,7 +86,6 @@ fn main() {
     };
     let mut events = Vec::<Event>::new();
     let mut event_string = Vec::<String>::new();
-    dbg!(events.last());
     for line in contents.with_position() {
         match line {
             Position::Only(_) => {
@@ -88,6 +120,7 @@ fn main() {
         }
 
     }
+    dbg!(events);
 
 
 }
