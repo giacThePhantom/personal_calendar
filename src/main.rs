@@ -33,44 +33,43 @@ impl Default for Event {
     }
 }
 
+fn merge_tags_one_line(data : &Vec<String>) -> Vec<String>{
+    let mut res = Vec::<String>::new();
+    for line in data {
+        match line.chars().nth(0) {
+            None => (),
+            Some('>') | Some('#') => {
+                res.push(line.to_string());
+            },
+            _ => {
+                let last_idx = res.len() -1;
+                res[last_idx].push_str("\n");
+                res[last_idx].push_str(&line);
+            },
+        }
+    }
+    return res;
+}
 
 impl Event {
-    fn new(data : & Vec<String>) -> Self{
+    fn new(data : &Vec<String>) -> Self{
+
 
         println!("Building new event");
-        dbg!(data);
         let mut res = Event::default();
-        let mut name = String::new();
-        let mut property = String::new();
+        let mut data = merge_tags_one_line(data);
+        dbg!(&data);
         for i in data{
             match i.chars().nth(0) {
                 None => (),
                 Some('>') => {
-                    name.push_str(&i[1..].trim());
-                    // res.name = Some(i.clone());
                 },
                 Some('#') => {
-                    if property.len() > 0{
-                        dbg!(&property);
-                    }
-                        property.clear();
-                    property.push_str(&i[1..].trim());
                 }
                 _ => {
-                    if property.len() > 0 {
-                        property.push_str("\n");
-                        property.push_str(&i.trim());
-                    }
-                    else if name.len() > 0 {
-                        name.push_str("\n");
-                        name.push_str(&i.trim());
-                    }
-
-                    println!("FOUND CONTINUATION OF PROPERTY");
                 }
             }
         }
-        res.name = Some(name);
         return res;
 
     }
@@ -121,8 +120,6 @@ fn main() {
 
     }
     dbg!(events);
-
-
 }
 
 fn read_lines<P>(filename: P) -> io::Result<io::Lines<io::BufReader<fs::File>>>
