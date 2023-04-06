@@ -3,32 +3,20 @@ use std::io::{self, BufRead};
 use std::env;
 use std::path::Path;
 use itertools::{Itertools, Position};
+use std::collections::HashMap;
 
-enum EventData {
-    Custom(&'static str),
-}
 
 #[derive(Debug)]
 struct Event {
     name: Option<String>,
-    starting_date: Option<String>,
-    ending_date: Option<String>,
-    depends_on: Option<String>,
-    repeat: Option<String>,
-    tag: Option<String>,
-    location: Option<String>,
+    properties : HashMap<String, String>,
 }
 
 impl Default for Event {
     fn default() -> Self {
         Self {
             name : None,
-            starting_date: None,
-            ending_date: None,
-            depends_on: None,
-            repeat: None,
-            tag: None,
-            location: None,
+            properties : HashMap::new(),
         }
     }
 }
@@ -57,17 +45,33 @@ impl Event {
 
         println!("Building new event");
         let mut res = Event::default();
-        let mut data = merge_tags_one_line(data);
+        let data = merge_tags_one_line(data);
         dbg!(&data);
         for i in data{
             match i.chars().nth(0) {
                 None => (),
                 Some('>') => {
+                    res.name = Some(i[1..]
+                        .trim()
+                        .to_string());
                 },
                 Some('#') => {
+                    match i[1..].split_once(':') {
+                        Some((key, value)) => {
+                            res.properties.insert(
+                                key.trim()
+                                    .to_string(),
+                                value.trim()
+                                    .to_string()
+                            );
+                        }
+                        None => {
+                            println!("Didn't found the delimeter :");
+                        }
+
+                    }
                 }
-                _ => {
-                }
+                _ => (),
             }
         }
         return res;
